@@ -1,0 +1,351 @@
+# This is an example orderly configuration file - edit it to suit your
+# needs.  The fields "script" and "artefacts" are the only
+# ones required (plus whatever your project lists in the root
+# configuration) so they are listed first here.  After that optional
+# fields are listed.  The order does not matter so reorder to suit
+# yourself.
+#
+# The "data" section will typically contain one or more fields with
+# the name corresponding to an R object you want and the value
+# corresponding to the SQL query to pull that data from the database.
+# You can use a filename instead of an inline query.  Run queries to
+# multiple lines using the `>-` yaml syntax.
+#
+#     data:
+#       dat: SELECT field1, field2 FROM table
+#       more: >-
+#         SELECT field1, field2
+#           FROM table1 JOIN table2
+#             ON table1.id = table2.fk
+#       another: from_file.sql
+#
+# If you are writing a report that uses only artefacts from other
+# reports, you can omit this field.
+
+# You must have a script that does something with the data.  This
+# will be a single string and the filename must exist when orderly is
+# run
+script: script.R
+
+# You must list at least one artefact that your report will generate.
+# Each artefact consists of one or more files.  The format is to list
+# the "type" of an artefact (staticgraph, interactivegraph, data,
+# report), then below that a description (free text) and then a
+# filename as either a single file or an array of files
+#
+#     artefacts:
+#       - staticgraph:
+#           description: A graph of things
+#           filenames: mygraph.png
+#       - report:
+#           description: A complex report
+#           filenames:
+#             - report.html
+#             - figures/fig1.png
+#             - figures/fig2.png
+artefacts:
+  - staticgraph:
+      description: Plot for sense-checking scenarios
+      filenames: plots/scenario_plot.pdf
+  - staticgraph:
+      description: Plot for weekly deaths fit
+      filenames: plots/wdcp_plot.pdf
+  - data:
+      description: Scenario outputs
+      filenames:
+        - data/dih_out.rds
+        - data/vacc_out.rds
+
+# An optional name to describe the report in more detail than its
+# directory name (which must be short) but less detail than
+# "description" (which can be as long as you want).  Must be a string.
+#
+# displayname:
+
+# An optional free-text description to decsribe the report in as much
+# detail as you want.  Must be a string.  The yaml `>-` or `|` syntax
+# might be useful for long descriptions.
+#
+# description:
+
+# Optional parameters to the report.  These will be substituted into
+# the SQL queries.  For example:
+#
+# parameters:
+#   a:
+#     default: 1
+#   b: ~
+#
+# would declare a parameter called 'a' with a default value of 1, and
+# a parameter of b with no default.
+#
+parameters:
+  iso3c: ~
+  vaccine_counterfactual:
+    default: "increase"
+
+# Similar to "data" but sets of temporary views before the data are
+# extracted.  Can be embedded SQL strings or filenames to actual
+# queries.  Use this to simplify the extraction.
+#
+# views:
+
+# Packages that should be loaded before the script is run.  Use this
+# in preference to explicit library() calls in your script because it
+# will make it easier to provision containers to run the orderly
+# reports.
+#
+packages:
+  - squire.page
+  - dplyr
+  - readr
+  - purrr
+  - tidyr
+  - geomtextpath
+  - ggpubr
+  - paletteer
+  - pals
+  - slider
+
+# Source files, in addition to the script.  Typically these will
+# contain function definitions.  These will be sourced after loading
+# any packages, and before running your script.  Use this in
+# preference to explicit source() calls in your script because
+# otherwise you will have to add them to "resources" (see below)
+#
+sources:
+  - funcs.R
+  - plotting.R
+
+# Resources that the script needs to run; this is an array of strings
+# representing filenames *relative to, and below, this directory*.
+# These will be copied into place when the script is run, and again
+# when commiting the report.  If you require a file and do not list it
+# here, your script will fail!  (That's a good thing because we find
+# out what your script actually needed immediately).  You do not need
+# to list files already listed in "sources" here, or any .sql files
+# referenced in "views" or "data"
+#
+resources:
+  - vaccine_counterfactuals.csv
+  - fits/ABW.rds
+  - fits/AFG.rds
+  - fits/AGO.rds
+  - fits/ALB.rds
+  - fits/ARE.rds
+  - fits/ARG.rds
+  - fits/ARM.rds
+  - fits/AUS.rds
+  - fits/AUT.rds
+  - fits/AZE.rds
+  - fits/BDI.rds
+  - fits/BEL.rds
+  - fits/BEN.rds
+  - fits/BFA.rds
+  - fits/BGD.rds
+  - fits/BGR.rds
+  - fits/BHR.rds
+  - fits/BHS.rds
+  - fits/BIH.rds
+  - fits/BLR.rds
+  - fits/BLZ.rds
+  - fits/BOL.rds
+  - fits/BRA.rds
+  - fits/BRB.rds
+  - fits/BRN.rds
+  - fits/BTN.rds
+  - fits/BWA.rds
+  - fits/CAF.rds
+  - fits/CAN.rds
+  - fits/CHE.rds
+  - fits/CHL.rds
+  - fits/CIV.rds
+  - fits/CMR.rds
+  - fits/COD.rds
+  - fits/COG.rds
+  - fits/COL.rds
+  - fits/COM.rds
+  - fits/CPV.rds
+  - fits/CRI.rds
+  - fits/CUB.rds
+  - fits/CUW.rds
+  - fits/CYP.rds
+  - fits/CZE.rds
+  - fits/DEU.rds
+  - fits/DJI.rds
+  - fits/DNK.rds
+  - fits/DOM.rds
+  - fits/DZA.rds
+  - fits/ECU.rds
+  - fits/EGY.rds
+  - fits/ESP.rds
+  - fits/EST.rds
+  - fits/ETH.rds
+  - fits/FIN.rds
+  - fits/FJI.rds
+  - fits/FRA.rds
+  - fits/GAB.rds
+  - fits/GBR.rds
+  - fits/GEO.rds
+  - fits/GHA.rds
+  - fits/GIN.rds
+  - fits/GMB.rds
+  - fits/GNB.rds
+  - fits/GNQ.rds
+  - fits/GRC.rds
+  - fits/GRD.rds
+  - fits/GTM.rds
+  - fits/GUM.rds
+  - fits/GUY.rds
+  - fits/HKG.rds
+  - fits/HND.rds
+  - fits/HRV.rds
+  - fits/HTI.rds
+  - fits/HUN.rds
+  - fits/IDN.rds
+  - fits/IND.rds
+  - fits/IRL.rds
+  - fits/IRN.rds
+  - fits/IRQ.rds
+  - fits/ISL.rds
+  - fits/ISR.rds
+  - fits/ITA.rds
+  - fits/JAM.rds
+  - fits/JOR.rds
+  - fits/JPN.rds
+  - fits/KAZ.rds
+  - fits/KEN.rds
+  - fits/KGZ.rds
+  - fits/KHM.rds
+  - fits/KOR.rds
+  - fits/KWT.rds
+  - fits/LAO.rds
+  - fits/LBN.rds
+  - fits/LBR.rds
+  - fits/LBY.rds
+  - fits/LCA.rds
+  - fits/LKA.rds
+  - fits/LSO.rds
+  - fits/LTU.rds
+  - fits/LUX.rds
+  - fits/LVA.rds
+  - fits/MAC.rds
+  - fits/MAR.rds
+  - fits/MDA.rds
+  - fits/MDG.rds
+  - fits/MDV.rds
+  - fits/MEX.rds
+  - fits/MKD.rds
+  - fits/MLI.rds
+  - fits/MLT.rds
+  - fits/MMR.rds
+  - fits/MNE.rds
+  - fits/MOZ.rds
+  - fits/MRT.rds
+  - fits/MUS.rds
+  - fits/MWI.rds
+  - fits/MYS.rds
+  - fits/NAM.rds
+  - fits/NER.rds
+  - fits/NGA.rds
+  - fits/NIC.rds
+  - fits/NLD.rds
+  - fits/NOR.rds
+  - fits/NPL.rds
+  - fits/NZL.rds
+  - fits/OMN.rds
+  - fits/PAK.rds
+  - fits/PAN.rds
+  - fits/PER.rds
+  - fits/PHL.rds
+  - fits/PNG.rds
+  - fits/POL.rds
+  - fits/PRT.rds
+  - fits/PRY.rds
+  - fits/PSE.rds
+  - fits/PYF.rds
+  - fits/QAT.rds
+  - fits/ROU.rds
+  - fits/RUS.rds
+  - fits/RWA.rds
+  - fits/SAU.rds
+  - fits/SDN.rds
+  - fits/SEN.rds
+  - fits/SGP.rds
+  - fits/SLE.rds
+  - fits/SLV.rds
+  - fits/SOM.rds
+  - fits/SRB.rds
+  - fits/SSD.rds
+  - fits/STP.rds
+  - fits/SUR.rds
+  - fits/SVK.rds
+  - fits/SVN.rds
+  - fits/SWE.rds
+  - fits/SWZ.rds
+  - fits/SYC.rds
+  - fits/SYR.rds
+  - fits/TCD.rds
+  - fits/TGO.rds
+  - fits/THA.rds
+  - fits/TJK.rds
+  - fits/TKM.rds
+  - fits/TLS.rds
+  - fits/TTO.rds
+  - fits/TUN.rds
+  - fits/TUR.rds
+  - fits/TWN.rds
+  - fits/TZA.rds
+  - fits/UGA.rds
+  - fits/UKR.rds
+  - fits/URY.rds
+  - fits/USA.rds
+  - fits/UZB.rds
+  - fits/VCT.rds
+  - fits/VEN.rds
+  - fits/VNM.rds
+  - fits/YEM.rds
+  - fits/ZAF.rds
+  - fits/ZMB.rds
+  - fits/ZWE.rds
+
+# Optional name of a variable to make the SQL connection available to
+# the script.  Use this with care and avoid using any queries that
+# modify the database (i.e., use DBI::dbGetQuery with "SELECT" queries
+# *only*.  Must be a string.
+#
+# connection:
+
+# Indicate which reports your report depends on.  You can use this to
+# pull in artefacts from previous reports.  You can depend in multiple
+# reports.  The format looks like this:
+#
+#     depends:
+#       other_report_name:
+#         id: (identifier, possibly "latest")
+#         use: (mapping of filenames in the format dest: from)
+
+# For example, to depend on the latest version of report
+# 'other-report', pulling in 'data.csv' as 'other-data.csv' you might
+# use:
+#
+#     depends:
+#       other-report:
+#         id: latest
+#         use:
+#           other-data.csv: data.csv
+#
+
+depends:
+  generate_vaccine_profiles:
+    id: latest
+    use:
+      vaccine_profiles.Rds: vaccine_profiles.Rds
+  income_boosting_rates:
+    id: latest
+    use:
+      income_boosts.Rds: income_boosts.Rds
+  income_group_time_to_open:
+    id: latest
+    use:
+      average_time_to_opening.Rds: average_time_to_opening.Rds
