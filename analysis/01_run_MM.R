@@ -88,10 +88,21 @@ vaccine_doses <-
   # here I opted to actuallyuse the ratio between what the coverage was suggesting and use that to project
   # forward the boses where covmedianfinal was na
   mutate(ratio = mean(p_doses[seq(-8, -1, 1) + which(is.na(p_doses))[1]] / primary_doses[seq(-8, -1, 1) + which(is.na(p_doses))[1]])) %>%
-  mutate(p_doses = replace(p_doses, which(is.na(p_doses)), primary_doses[which(is.na(p_doses))]*unique(ratio)))  %>%
-  mutate(p_doses = replace(b_doses, which(is.na(b_doses)), primary_doses[which(is.na(b_doses))]*unique(ratio)))  %>%
+  mutate(p_doses = replace(p_doses, is.na(p_doses), primary_doses[is.na(p_doses)]*unique(ratio)))  %>%
+  mutate(b_doses = replace(b_doses, is.na(b_doses), primary_doses[is.na(b_doses)]*unique(ratio)))  %>%
   ungroup() %>%
-  arrange(iso3c, date) %>%
+  arrange(iso3c, date)
+
+# check this looks right
+vaccine_doses %>%
+  filter(iso3c == "ARM") %>%
+  mutate(across(ends_with("doses"), ~replace_na(.x, 0))) %>%
+  mutate(across(ends_with("doses"), cumsum)) %>%
+  pivot_longer(ends_with("doses")) %>%
+  ggplot(aes(as.Date(date), value/pop, color = name)) +
+           geom_line()
+
+vaccine_doses <- vaccine_doses %>%
   select(date, p_doses, b_doses, iso3c) %>%
   rename(primary_doses = p_doses,
          booster_doses = b_doses) %>%
